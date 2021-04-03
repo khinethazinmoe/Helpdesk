@@ -1,0 +1,170 @@
+<div class="d-flex justify-content-center">
+	<div class="card p-3 m-2 w-75">
+
+<form class="d-flex">
+
+    <div class="d-flex justify-content-between mr-2">
+
+      <div class="d-flex flex-column mr-2">
+        <h4 class="text-secondary">Select Date:</h4>
+        <input type="date" name="start-date" class="btn btn-info bg-info text-white text-center mr-1">
+      </div>
+
+      <div class="d-flex flex-column">
+        <h4 class="text-secondary">To Date:</h4>
+        <input type="date" name="end-date" class="btn btn-info bg-info text-white text-center mr-1">
+      </div>
+    </div>
+
+
+      <div class="d-flex flex-column mr-5">
+        
+
+        {% if clear %}
+        <h4 class="text-primary">
+            <i class="far fa-trash-alt"></i>
+        </h4>
+        <a href="tickets/date/clear" class="btn btn-success">Clear</a>
+
+        {% else %}
+        <h4 class="text-secondary">
+            <i class="far fa-calendar-alt"></i>
+        </h4>
+        <input type="submit" name="submit" class=" btn btn-primary bg-info text-white text-center mr-1">
+        {% endif %}
+
+
+      </div>
+      
+    <div class="d-flex flex-column">
+    <h4 class="text-secondary">
+    	<i class="far fa-file-alt"></i>
+	</h4>
+    <a href="tickets/pdf" class="btn btn-success mr-3">Export PDF</a>
+	</div>
+
+	<div class="d-flex flex-column">
+    <h4 class="text-secondary">
+    	<i class="fas fa-file-csv"></i>
+	</h4>
+    <a href="tickets/csv" class="btn btn-success">Export CSV</a>
+	</div>
+
+    </form>
+
+<div class="mt-3">
+<span class="badge badge-danger rounded-pill">{{find.status}}</span>
+<span class="badge badge-danger rounded-pill">{{find.priority}}</span>
+
+
+<!-- for category 
+	>>> computer-error slug -- name 
+	>>> Computer Error
+	>>> Categories
+-->
+{% for category in categories %}
+{% if category.slug == find.category %}
+	<span class="badge badge-danger rounded-pill">{{category.name}}</span>  
+{% endif %}
+{% endfor %}
+
+
+{% if find.category == 'all' and cat_none == False %}
+	<span class="badge badge-danger rounded-pill">all</span>
+{% endif %}
+
+
+{% if cat_none == True %}
+	<span class="badge badge-danger rounded-pill">none</span>
+{% endif %}
+
+
+<span class="badge badge-danger rounded-pill">{{find.sort}}</span>
+<span class="badge badge-danger rounded-pill">{{find.order}}</span>
+</div>
+
+<table class="table table-bordered mt-2">
+	<thead class="bg-secondary">
+		<tr>
+			<th scope="col" class="text-white">PROFILE</th>
+			<th scope="col" class="text-white">TITLE</th>
+			<th scope="col" class="text-white">DEPARTMENT</th>
+			<th scope="col" class="text-white">STATUS</th>
+			<th scope="col" class="text-white">PRIORITY</th>
+			<th scope="col" class="text-white">CATEGORY</th>
+			<th scope="col" class="text-white">DATE</th>
+
+
+
+			<tbody>
+		{% for ticket in tickets  %} 
+			<tr>
+				<!- Profile -->
+				<td>
+					<div style="display: inline-flex;">
+						<a href="{% url 'user-detail-view' id=ticket.user.id %}">
+							<img src="{{ticket.user.profile.photo.url}}" alt="profile"
+							width="50" height="50"
+							class="border border-primary rounded-circle mr-3">
+						</a>
+						<div>
+							<a href="{% url 'user-detail-view' id=ticket.user.id %}">
+								<h5 style="color: #0849AA;">{{ticket.user.username}}</h5>
+							</a>
+							<p style="font-size: 0.8em;color: #7EA6E0;">{{ticket.user.date_joined}}</p>
+						</div>
+					</div>
+				</td>
+
+				<td>
+					<a href="{% url 'ticket-detail' id=ticket.id %}">
+					{{ticket.subject}}
+					</a>
+				</td>
+
+				<td>{{ticket.name}}</td>
+
+
+
+
+				{% if ticket.status == 'Open' %}
+				<td class="bg-primary text-white">Open</td>
+				{% elif ticket.status == 'Closed' %}
+				<td class="bg-danger text-white">Closed</td>
+				{% else %}
+				<td class="bg-warning text-white">Pending</td>
+				{% endif %}
+
+
+				
+
+
+				{% if ticket.priority == 'critical' %}
+				<td class="bg-primary text-white">Critical</td>
+
+				{% elif ticket.priority == 'urgent' %}
+				<td class="bg-danger text-white">Urgent</td>
+
+				{% elif ticket.priority == 'normal' %}
+				<td class="bg-warning text-white">Normal</td>
+
+				{% else %}
+				<td class="bg-success text-white">Not Important</td>
+				{% endif %}
+
+
+				<td>{{ticket.category.name}}</td>
+				<td>{{ticket.created}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+			
+
+		</tr>
+	</thead>
+
+
+</table>
+{% include 'tickets/paginator.html' %}
+</div>
+</div>
